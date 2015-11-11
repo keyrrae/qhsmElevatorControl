@@ -51,7 +51,7 @@ void   QHsmTst_ctor(void);                               /* the ctor */
 static QState QHsmTst_initial(QHsmTst *me);  /* initial pseudostate-handler */
 static QState QHsmTst_moving(QHsmTst *me);  /* initial pseudostate-handler */
 static QState QHsmTst_idle    (QHsmTst *me);                  /* state-handler */
-static QState QHsmTst_approx   (QHsmTst *me);                  /* state-handler */
+//static QState QHsmTst_approx   (QHsmTst *me);                  /* state-handler */
 static QState QHsmTst_stop  (QHsmTst *me);                  /* state-handler */
 
 
@@ -144,6 +144,41 @@ int checkUpDown(struct queue *q, int dest){
     pele++;
     psim++;
     return 0;
+}
+
+int decideDir(unsigned int curr, unsigned int EleDir){
+    int i;
+
+    if (!isEmptyQueue(qout)){
+        if (EleDir == UP){
+            for (i = 0; i < qout.rear; i++){
+                if(qout.ele[i] > curr)
+                    return UP;
+            }
+            for (i = 0; i < qin.rear; i++){
+                if(qin.ele[i] > curr)
+                    return UP;
+            }
+            return DOWN;
+        }
+    }
+
+    if (!isEmptyQueue(qin)){
+        if (EleDir == DOWN){
+            for (i = 0; i < qout.rear; i++){
+                if(qout.ele[i] < curr)
+                    return DOWN;
+            }
+            for (i = 0; i < qin.rear; i++){
+                if(qin.ele[i] < curr)
+                    return DOWN;
+            }
+            return UP;
+        }
+    }
+
+    return EleDir;
+
 }
 /* global objects ----------------------------------------------------------*/
 QHsmTst HSM_QHsmTst;                /* the sole instance of the QHsmTst HSM */
@@ -361,7 +396,7 @@ QState QHsmTst_moving(QHsmTst *me) {
     return Q_SUPER(&QHsm_top);
 
 }
-
+/*
 QState QHsmTst_approx(QHsmTst *me) {
     switch(Q_SIG(me)) {
         case Q_ENTRY_SIG:{
@@ -413,7 +448,7 @@ printf("cp\n");
     return Q_SUPER(&QHsm_top);
 
 }
-
+*/
 QState QHsmTst_stop(QHsmTst *me) {
     switch(Q_SIG(me)){
         case Q_ENTRY_SIG: {
@@ -422,8 +457,9 @@ QState QHsmTst_stop(QHsmTst *me) {
             return Q_HANDLED();
         }
         case Q_EXIT_SIG: {
-            if (!isEmptyQueue(qin)){
-                EleDir = (curr - headQueue(qin)) > 0 ? UP : DOWN;
+            EleDir = decideDir(curr, EleDir);
+/*            if (!isEmptyQueue(qout)){
+                EleDir = desideDir(qout, curr, EleDir);
                 return Q_HANDLED();
             }
             else {
@@ -431,56 +467,120 @@ QState QHsmTst_stop(QHsmTst *me) {
                     EleDir = (curr - headQueue(qout)) > 0 ? UP : DOWN;
                     return Q_HANDLED();
                 }
-            }
+            }*/
             return Q_HANDLED();
         }
         case Q_OUT_FIRST: {
-
-            enQueue(&qout, 1);
-            return Q_HANDLED();
+            if (curr == 1){
+                pele++;
+                psim++;
+                return Q_HANDLED();
+            }
+            else{
+                enQueue(&qout, 1);
+                return Q_HANDLED();
+            }
         }
         case Q_OUT_SECOND: {
-
-            enQueue(&qout, 2);
-            return Q_HANDLED();
+            if (curr == 2){
+                pele++;
+                psim++;
+                return Q_HANDLED();
+            }
+            else{
+                enQueue(&qout, 2);
+                return Q_HANDLED();
+            }
         }
         case Q_OUT_THIRD: {
-
-            enQueue(&qout, 3);
-            return Q_HANDLED();
+            if (curr == 3){
+                pele++;
+                psim++;
+                return Q_HANDLED();
+            }
+            else{
+                enQueue(&qout, 3);
+                return Q_HANDLED();
+            }
         }
         case Q_OUT_FORTH: {
-
-            enQueue(&qout, 4);
-            return Q_HANDLED();
+            if (curr == 4){
+                pele++;
+                psim++;
+                return Q_HANDLED();
+            }
+            else{
+                enQueue(&qout, 4);
+                return Q_HANDLED();
+            }
         }
         case Q_OUT_FIFTH: {
-
-            enQueue(&qout, 5);
-            return Q_HANDLED();
+            if (curr == 5){
+                pele++;
+                psim++;
+                return Q_HANDLED();
+            }
+            else{
+                enQueue(&qout, 5);
+                return Q_HANDLED();
+            }
         }
 
         case Q_IN_FIRST: {
-            enQueue(&qin, 1);
-            return Q_HANDLED();
+            if (curr == 1){
+                pele--;
+                psim--;
+                return Q_HANDLED();
+            }
+            else {
+                enQueue(&qin, 1);
+                return Q_HANDLED();
+            }
         }
 
         case Q_IN_SECOND: {
-            enQueue(&qin, 2);
-            return Q_HANDLED();
+            if (curr == 2){
+                pele--;
+                psim--;
+                return Q_HANDLED();
+            }
+            else {
+                enQueue(&qin, 2);
+                return Q_HANDLED();
+            }
         }
         case Q_IN_THIRD: {
-            enQueue(&qin, 3);
-            return Q_HANDLED();
+            if (curr == 3){
+                pele--;
+                psim--;
+                return Q_HANDLED();
+            }
+            else {
+                enQueue(&qin, 3);
+                return Q_HANDLED();
+            }
         }
         case Q_IN_FORTH: {
-            enQueue(&qin, 4);
-            return Q_HANDLED();
+            if (curr == 4){
+                pele--;
+                psim--;
+                return Q_HANDLED();
+            }
+            else {
+                enQueue(&qin, 4);
+                return Q_HANDLED();
+            }
         }
         case Q_IN_FIFTH: {
-            enQueue(&qin, 5);
-            //updateIn();
-            return Q_HANDLED();
+            if (curr == 5){
+                pele--;
+                psim--;
+                return Q_HANDLED();
+            }
+            else {
+                enQueue(&qin, 5);
+                return Q_HANDLED();
+            }
         }
         case Q_NOP :{
             if(countSec == 10){

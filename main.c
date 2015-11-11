@@ -32,14 +32,19 @@
 
 /* local objects -----------------------------------------------------------*/
 static FILE *l_outFile = (FILE *)0;
+static unsigned int freq = 0;
+static unsigned long simTime = 0;
+static char stop = 0;
 static void dispatch(QSignal sig);
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
     QHsmTst_ctor();                                  /* instantiate the HSM */
 
-    if (argc > 1) {                                  /* file name provided? */
-        l_outFile = fopen(argv[1], "w");
+    if (argc >= 3) {                                  /* file name provided? */
+        l_outFile = fopen("results.out", "w");
+        freq = atoi(argv[1]);
+        simTime = atol(argv[2]);
     }
 
     if (l_outFile == (FILE *)0) {                   /* interactive version? */
@@ -87,6 +92,67 @@ int main(int argc, char *argv[]) {
         QHsm_init((QHsm *)&HSM_QHsmTst);    /* take the initial transitioin */
 
                                      /* testing all kinds of transitions... */
+
+
+ 	    unsigned long i;
+        int r;
+        if (argc == 4){
+            srand(atoi(argv[3]));
+        }
+        else {
+            srand(999);
+        }
+
+
+
+        if (stop){
+            r = rand() % 5;
+            switch (r) {
+                case 0:
+                    dispatch(Q_IN_FIRST); break;
+                case 1:
+                    dispatch(Q_IN_SECOND); break;
+                case 2:
+                    dispatch(Q_IN_THIRD); break;
+                case 3:
+                    dispatch(Q_IN_FORTH); break;
+                case 4:
+                    dispatch(Q_IN_FIFTH); break;
+                default:
+                    break;
+            }
+        }
+        for(i = 0; i < simTime / freq; ++i){
+            r = rand() % 9;
+            //printf("%d\n",r);
+            switch (r) {
+                case 0:
+                    dispatch(Q_OUT_FIRST); break;
+                case 1:
+                    dispatch(Q_OUT_SECOND); break;
+                case 2:
+                    dispatch(Q_OUT_THIRD); break;
+                case 3:
+                    dispatch(Q_OUT_FORTH); break;
+                case 4:
+                    dispatch(Q_OUT_FIFTH); break;
+                case 5:
+                    dispatch(Q_IN_FIRST); break;
+                case 6:
+                    dispatch(Q_IN_SECOND); break;
+                case 7:
+                    dispatch(Q_IN_THIRD); break;
+                case 8:
+                    dispatch(Q_IN_FORTH); break;
+                case 9:
+                    dispatch(Q_IN_FIFTH); break;
+                default:
+                    break;
+            }
+        }
+
+
+
         dispatch(Q_OUT_FIFTH);
         for (int i = 0;i <128;i++){
 

@@ -50,29 +50,30 @@ int main(int argc, char *argv[]) {
                __DATE__, __TIME__, QP_getVersion());
 
         QHsm_init((QHsm *)&HSM_QHsmTst);    /* take the initial transitioin */
-
-        for (;;) {                                            /* event loop */
+/*
+        for (;;) {                                            // event loop
             int c;
 
             printf("\n>");
             c = getchar();
             printf(": ");
 
-            if ('a' <= c && c <= 'i') {                        /* in range? */
+            if ('a' <= c && c <= 'i') {                        // in range?
                 Q_SIG((QHsm *)&HSM_QHsmTst) = (QSignal)(c - 'a' + A_SIG);
             }
-            else if ('A' <= c && c <= 'I') {                   /* in range? */
+            else if ('A' <= c && c <= 'I') {                   // in range?
                 Q_SIG((QHsm *)&HSM_QHsmTst) = (QSignal)(c - 'A' + A_SIG);
             }
-            else if (c == '\33') {                          /* the ESC key? */
+            else if (c == '\33') {                          // the ESC key?
                 Q_SIG((QHsm *)&HSM_QHsmTst) = TERMINATE_SIG;
             }
             else {
                 Q_SIG((QHsm *)&HSM_QHsmTst) = IGNORE_SIG;
             }
 
-            QHsm_dispatch((QHsm *)&HSM_QHsmTst);      /* dispatch the event */
+            QHsm_dispatch((QHsm *)&HSM_QHsmTst);      // dispatch the event
         }
+*/
     }
     else {                                                 /* batch version */
         printf("QHsmTst example, built on %s at %s, QP-nano %s\n"
@@ -86,27 +87,14 @@ int main(int argc, char *argv[]) {
         QHsm_init((QHsm *)&HSM_QHsmTst);    /* take the initial transitioin */
 
                                      /* testing all kinds of transitions... */
-        dispatch(A_SIG);
-        dispatch(B_SIG);
-        dispatch(D_SIG);
-        dispatch(E_SIG);
-        dispatch(I_SIG);
-        dispatch(F_SIG);
-        dispatch(I_SIG);
-        dispatch(I_SIG);
-        dispatch(F_SIG);
-        dispatch(A_SIG);
-        dispatch(B_SIG);
-        dispatch(D_SIG);
-        dispatch(D_SIG);
-        dispatch(E_SIG);
-        dispatch(G_SIG);
-        dispatch(H_SIG);
-        dispatch(H_SIG);
-        dispatch(C_SIG);
-        dispatch(G_SIG);
-        dispatch(C_SIG);
-        dispatch(C_SIG);
+        dispatch(Q_OUT_FIFTH);
+        for (int i = 0;i <128;i++){
+
+            printf("i = %d\n",i);
+            dispatch(Q_NOP);
+        }
+
+
 
         fclose(l_outFile);
     }
@@ -129,7 +117,8 @@ void BSP_exit(void) {
 }
 /*..........................................................................*/
 static void dispatch(QSignal sig) {
-    fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
+    //fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
+    //printf("dispatch\n");
     Q_SIG((QHsm *)&HSM_QHsmTst) = sig;
     QHsm_dispatch((QHsm *)&HSM_QHsmTst);              /* dispatch the event */
 }

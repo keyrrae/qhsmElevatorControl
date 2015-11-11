@@ -29,15 +29,19 @@
 #define qhsmtst_h
 
 enum QHsmTstSignals {
-    A_SIG = Q_USER_SIG,
-    B_SIG,
-    C_SIG,
-    D_SIG,
-    E_SIG,
-    F_SIG,
-    G_SIG,
-    H_SIG,
-    I_SIG,
+    Q_NOP = Q_USER_SIG,
+    Q_OUT_FIRST,
+    Q_OUT_SECOND,
+    Q_OUT_THIRD,
+    Q_OUT_FORTH,
+    Q_OUT_FIFTH,
+    Q_IN_FIRST,
+    Q_IN_SECOND,
+    Q_IN_THIRD,
+    Q_IN_FORTH,
+    Q_IN_FIFTH,
+
+
     TERMINATE_SIG,
     IGNORE_SIG,
     MAX_SIG

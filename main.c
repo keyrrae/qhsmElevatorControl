@@ -29,13 +29,21 @@
 #include "qhsmtst.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "elev.h"
 
 /* local objects -----------------------------------------------------------*/
-static FILE *l_outFile = (FILE *)0;
+FILE *l_outFile = (FILE *)0;
 static unsigned int freq = 0;
 static unsigned long simTime = 0;
+unsigned long simCount=0;
 static char stop = 0;
 static void dispatch(QSignal sig);
+
+struct measure m[5] = {{0, 0, 0, 0.0},
+                       {0, 0, 0, 0.0},
+                       {0, 0, 0, 0.0},
+                       {0, 0, 0, 0.0},
+                       {0, 0, 0, 0.0}};
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
@@ -95,36 +103,19 @@ int main(int argc, char *argv[]) {
 
 
  	    unsigned long i;
+        int j;
         int r;
         if (argc == 4){
             srand(atoi(argv[3]));
         }
         else {
-            srand(999);
+            srand(234);
         }
 
-
-
-        if (stop){
-            r = rand() % 5;
-            switch (r) {
-                case 0:
-                    dispatch(Q_IN_FIRST); break;
-                case 1:
-                    dispatch(Q_IN_SECOND); break;
-                case 2:
-                    dispatch(Q_IN_THIRD); break;
-                case 3:
-                    dispatch(Q_IN_FORTH); break;
-                case 4:
-                    dispatch(Q_IN_FIFTH); break;
-                default:
-                    break;
-            }
-        }
         for(i = 0; i < simTime / freq; ++i){
-            r = rand() % 9;
-            //printf("%d\n",r);
+            r = rand() % 5;
+            printf("========%d=========\n",r+1);
+
             switch (r) {
                 case 0:
                     dispatch(Q_OUT_FIRST); break;
@@ -136,32 +127,37 @@ int main(int argc, char *argv[]) {
                     dispatch(Q_OUT_FORTH); break;
                 case 4:
                     dispatch(Q_OUT_FIFTH); break;
-                case 5:
-                    dispatch(Q_IN_FIRST); break;
-                case 6:
-                    dispatch(Q_IN_SECOND); break;
-                case 7:
-                    dispatch(Q_IN_THIRD); break;
-                case 8:
-                    dispatch(Q_IN_FORTH); break;
-                case 9:
-                    dispatch(Q_IN_FIFTH); break;
                 default:
                     break;
+            }
+            m[r].ptr = simCount;
+
+            printf("simtime: %lu\n", simCount);
+            simCount++;
+
+            for (j = 0; j < freq-1; j++){
+                dispatch(Q_NOP);
+                printf("=========NOP==========\n");
+                printf("simtime: %lu\n", simCount);
+                simCount++;
+
             }
         }
 
 
-
+/*
         dispatch(Q_OUT_FIFTH);
         for (int i = 0;i <128;i++){
 
             printf("i = %d\n",i);
             dispatch(Q_NOP);
         }
+*/
 
-
-
+for (i = 0; i<5; i++){
+    fprintf(l_outFile, "%lu: %f",i+1, m[i].avg);
+}
+fprintf(l_outFile, "\n");
         fclose(l_outFile);
     }
 

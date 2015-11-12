@@ -94,8 +94,8 @@ int main(int argc, char *argv[]) {
                __DATE__, __TIME__, QP_getVersion(),
                argv[1]);
 
-        fprintf(l_outFile, "QHsmTst example, QP-nano %s\n",
-                QP_getVersion());
+        //fprintf(l_outFile, "QHsmTst example, QP-nano %s\n",
+        //        QP_getVersion());
 
         QHsm_init((QHsm *)&HSM_QHsmTst);    /* take the initial transitioin */
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
 
         for(i = 0; i < simTime / freq; ++i){
             r = rand() % 5;
-            printf("========%d=========\n",r+1);
+            printf("========%d=========================\n",r+1);
 
             switch (r) {
                 case 0:
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
             m[r].ptr = simCount;
-
+            printf("m[%d].ptr = %lu\n",r,m[r].ptr);
             printf("simtime: %lu\n", simCount);
             simCount++;
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
 */
 
 for (i = 0; i<5; i++){
-    fprintf(l_outFile, "%lu: %f",i+1, m[i].avg);
+    fprintf(l_outFile, "%lu: %f  ",i+1, m[i].avg);
 }
 fprintf(l_outFile, "\n");
         fclose(l_outFile);

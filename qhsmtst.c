@@ -131,6 +131,10 @@ int headQueue(struct queue q){
     return 0;
 }
 
+int lenQueue(struct queue q){
+    return q.rear;
+}
+/*
 int checkUpDown(struct queue *q, int dest){
     if (curr != dest){
         EleDir = (curr - dest) > 0 ? UP : DOWN;
@@ -151,9 +155,10 @@ int checkUpDown(struct queue *q, int dest){
     psim++;
     return 0;
 }
-
+*/
 int decideDir(unsigned int curr, unsigned int EleDir){
     int i;
+    printf("curr %d, dir %d\n", curr, EleDir);
     if (curr == 1 && EleDir == DOWN) {
         return UP;
     }
@@ -162,17 +167,73 @@ int decideDir(unsigned int curr, unsigned int EleDir){
         return DOWN;
     }
 
+    if (EleDir == UP){
+        if(!isEmptyQueue(qout)){
+            for (i = 0; i < qout.rear; i++){
+                if(qout.ele[i] > curr)
+                    return UP;
+            }
+        }
+        printf("cp decide qout finished\n");
+        if(!isEmptyQueue(qin)){
+            for (i = 0; i < qin.rear; i++){
+                if(qin.ele[i] > curr)
+                    return UP;
+            }
+        }
+        printf("cp decide qin\n");
+        return DOWN;
+    }
+    else if (EleDir == DOWN){
+        if(!isEmptyQueue(qout)){
+            for (i = 0; i < qout.rear; i++){
+                if(qout.ele[i] < curr)
+                    return DOWN;
+            }
+        }
+        printf("cp2 decide qout finished\n");
+        if(!isEmptyQueue(qin)){
+            for (i = 0; i < qin.rear; i++){
+                if(qin.ele[i] < curr)
+                    return DOWN;
+            }
+        }
+        printf("cp2 decide qin\n");
+        return UP;
+    }
+
+    return EleDir;
+}
+
+    /*
+    printf("cpdeci\n");
     if (!isEmptyQueue(qout)){
+        printf("cp decide qout\n");
         if (EleDir == UP){
             for (i = 0; i < qout.rear; i++){
                 if(qout.ele[i] > curr)
                     return UP;
             }
+            printf("cp decide qout finished\n");
             for (i = 0; i < qin.rear; i++){
                 if(qin.ele[i] > curr)
                     return UP;
             }
+            printf("cp decide qin\n");
             return DOWN;
+        }
+        else if (EleDir == DOWN){
+            for (i = 0; i < qout.rear; i++){
+                if(qout.ele[i] < curr)
+                    return DOWN;
+            }
+            printf("cp decide qout finished\n");
+            for (i = 0; i < qin.rear; i++){
+                if(qin.ele[i] < curr)
+                    return DOWN;
+            }
+            printf("cp decide qin\n");
+            return UP;
         }
     }
 
@@ -189,10 +250,8 @@ int decideDir(unsigned int curr, unsigned int EleDir){
             return UP;
         }
     }
+*/
 
-    return EleDir;
-
-}
 int displayQueue(struct queue q){
     int i;
     for (i = 0;  i < q.rear; i++)
@@ -202,6 +261,10 @@ int displayQueue(struct queue q){
 
 int decideStop(unsigned int currVal, unsigned int EleDir){
 
+
+        printf("EleDir %d, curr %d \n", EleDir, currVal);
+        printf("qin: "); displayQueue(qin);
+        printf("qout: "); displayQueue(qout);
         EleDir = decideDir(currVal, EleDir);
         printf("curr prev %d\n", curr);
         curr = currVal + ((EleDir == UP) ? 1 : ((EleDir == DOWN) ? -1 : 0));
@@ -243,7 +306,7 @@ QState QHsmTst_initial(QHsmTst *me) {
     qout.rear = 0;
 
 
-    BSP_display("top-INIT;");
+    //BSP_display("top-INIT;");
     return Q_TRAN(&QHsmTst_idle);
 }
 /*..........................................................................*/
@@ -256,6 +319,7 @@ QState QHsmTst_idle(QHsmTst *me) {
         }
 
         case Q_EXIT_SIG: {
+            printf("\t\t P: %d PE: %d\n",psim, pele);
             return Q_HANDLED();
         }
 
@@ -266,9 +330,12 @@ QState QHsmTst_idle(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+
+                if (!inQueue(qout,1)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 1);
-                pout++;
-                psim++;
                 EleDir = decideDir(curr, EleDir);
                 return Q_TRAN(&QHsmTst_moving);
             }
@@ -281,9 +348,12 @@ QState QHsmTst_idle(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+
+                if (!inQueue(qout,2)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 2);
-                pout++;
-                psim++;
                 EleDir = decideDir(curr, EleDir);
                 return Q_TRAN(&QHsmTst_moving);
             }
@@ -296,9 +366,12 @@ QState QHsmTst_idle(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+
+                if (!inQueue(qout,3)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 3);
-                pout++;
-                psim++;
                 EleDir = decideDir(curr, EleDir);
                 return Q_TRAN(&QHsmTst_moving);
             }
@@ -312,9 +385,12 @@ QState QHsmTst_idle(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+
+                if (!inQueue(qout,4)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 4);
-                pout++;
-                psim++;
                 EleDir = decideDir(curr, EleDir);
                 return Q_TRAN(&QHsmTst_moving);
             }
@@ -327,10 +403,14 @@ QState QHsmTst_idle(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+
+                if (!inQueue(qout,5)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 5);
-                pout++;
-                psim++;
                 EleDir = decideDir(curr, EleDir);
+                printf("curr %d dir %d", curr, EleDir);
                 return Q_TRAN(&QHsmTst_moving);
             }
         }
@@ -350,12 +430,13 @@ QState QHsmTst_idle(QHsmTst *me) {
 }
 
 QState QHsmTst_moving(QHsmTst *me) {
-    printf("countSec %d\n", countSec);
+    //printf("countSec %d\n", countSec);
     //printf("direction %d\n", EleDir);
     //printf("moving func\n");
     switch (Q_SIG(me)) {
         case Q_ENTRY_SIG: {
             //printf("moving\n");
+            //printf("\t\tP: %d PE: %d\n",psim, pele);
             countSec = 0;
             return Q_HANDLED();
         }
@@ -364,9 +445,13 @@ QState QHsmTst_moving(QHsmTst *me) {
             return Q_HANDLED();
         }
         case Q_OUT_FIRST: {
+            //displayQueue(qout);
+            //printf("inqueue %d\n", inQueue(qout,1));
+            if (!inQueue(qout,1)){
+                pout++;
+                psim++;
+            }
             enQueue(&qout, 1);
-            psim++;
-            pout++;
             countSec++;
             if(countSec == MOVE_TIME){
                 countSec = 0;
@@ -374,14 +459,16 @@ QState QHsmTst_moving(QHsmTst *me) {
                     return Q_TRAN(&QHsmTst_stop);
                 }
             }
-            checkUpDown(&qout, 1);
             return Q_HANDLED();
         }
         case Q_OUT_SECOND: {
 
+
+            if (!inQueue(qout,2)){
+                pout++;
+                psim++;
+            }
             enQueue(&qout, 2);
-            psim++;
-            pout++;
             countSec++;
             if(countSec == MOVE_TIME){
                 countSec = 0;
@@ -389,13 +476,15 @@ QState QHsmTst_moving(QHsmTst *me) {
                     return Q_TRAN(&QHsmTst_stop);
                 }
             }
-            checkUpDown(&qout, 2);
             return Q_HANDLED();
         }
         case Q_OUT_THIRD: {
+
+            if (!inQueue(qout,3)){
+                pout++;
+                psim++;
+            }
             enQueue(&qout, 3);
-            psim++;
-            pout++;
             countSec++;
             if(countSec == MOVE_TIME){
                 countSec = 0;
@@ -406,9 +495,12 @@ QState QHsmTst_moving(QHsmTst *me) {
             return Q_HANDLED();
         }
         case Q_OUT_FORTH: {
+
+            if (!inQueue(qout,4)){
+                pout++;
+                psim++;
+            }
             enQueue(&qout, 4);
-            psim++;
-            pout++;
             countSec++;
             if(countSec == MOVE_TIME){
                 countSec = 0;
@@ -420,9 +512,12 @@ QState QHsmTst_moving(QHsmTst *me) {
             return Q_HANDLED();
         }
         case Q_OUT_FIFTH: {
+
+            if (!inQueue(qout,5)){
+                pout++;
+                psim++;
+            }
             enQueue(&qout, 5);
-            psim++;
-            pout++;
             countSec++;
             if(countSec == MOVE_TIME){
                 countSec = 0;
@@ -430,11 +525,11 @@ QState QHsmTst_moving(QHsmTst *me) {
                     return Q_TRAN(&QHsmTst_stop);
                 }
             }
-            checkUpDown(&qout, 5);
             return Q_HANDLED();
         }
 
         case Q_NOP :{
+            printf("\t\tP: %d PE: %d\n",psim, pele);
 
             countSec++;
             if(countSec == MOVE_TIME){
@@ -454,59 +549,8 @@ QState QHsmTst_moving(QHsmTst *me) {
     return Q_SUPER(&QHsm_top);
 
 }
-/*
-QState QHsmTst_approx(QHsmTst *me) {
-    switch(Q_SIG(me)) {
-        case Q_ENTRY_SIG:{
-            printf("approx\n");
-            if (curr == 1 && EleDir == DOWN) {
-                    EleDir = UP;
-            }
 
-            else if (curr == 5 && EleDir == UP){
-                EleDir = DOWN;
-            }
-            else {
-                curr += (EleDir == UP) ? 1 : -1;
-            }
-printf("%d\n",curr);
-            if(inQueue(qin, curr)){
-                remEleQueue(&qin, curr);
-                pele--;
-                psim--;
 
-                printf("cp1\n");
-                return Q_TRAN(&QHsmTst_stop);
-            }
-            else if (inQueue(qout, curr)){
-                remEleQueue(&qout, curr);
-                pout--;
-                pele++;
-                printf("cp2\n");
-                return Q_TRAN(&QHsmTst_stop);
-            }
-            else{
-                printf("cp3\n");
-                return Q_TRAN(&QHsmTst_idle);//moving);
-            }
-            printf("cp4\n");
-            return Q_HANDLED();
-        }
-printf("cp\n");
-
-        case Q_EXIT_SIG:{
-            return Q_HANDLED();
-        }
-
-        case TERMINATE_SIG: {
-            BSP_exit();
-            return Q_HANDLED();
-        }
-    }
-    return Q_SUPER(&QHsm_top);
-
-}
-*/
 QState QHsmTst_stop(QHsmTst *me) {
     printf("countSec %d\n",countSec);
     switch(Q_SIG(me)){
@@ -518,22 +562,27 @@ QState QHsmTst_stop(QHsmTst *me) {
 
                 printf("cp1\n");
             }
-            else if (inQueue(qout, curr)){
+
+            if (inQueue(qout, curr)){
                 remEleQueue(&qout, curr);
                 pout--;
                 pele++;
+                if (m[curr-1].ptr != 0){
+                m[curr-1].count++;
+                m[curr-1].accumTime += simCount - m[curr-1].ptr;
+                m[curr-1].avg = 1.0 * m[curr-1].accumTime/ m[curr-1].count;}
+                int r = rand() % 5 + 1;
+
+                enQueue(&qin, r);
                 printf("cp2\n");
             }
-            fprintf(l_outFile,"T: %lu P: %d PE: %d F: %d D: %s\n", simCount, psim, pele, curr, (EleDir == UP)? "UP" : "DOWN");
+            fprintf(l_outFile,"T: %lu P: %d PE: %d F: %d D: %s\n", simCount, lenQueue(qout)+lenQueue(qin), lenQueue(qin), curr, (EleDir == UP)? "UP" : "DOWN");
+            printf("T: %lu P: %d PE: %d F: %d D: %s\n", simCount, psim, pele, curr, (EleDir == UP)? "UP" : "DOWN");
 
-            m[curr-1].count++;
-            m[curr-1].accumTime += simCount - m[curr-1].ptr;
-            m[curr-1].avg = 1.0 * m[curr-1].accumTime/ m[curr-1].count;
+
             //m[curr].ptr = 0;
-            printf("m[%d] = {%u, %lu, %lu, %f}\n", curr, m[curr-1].ptr, m[curr-1].count, m[curr-1].accumTime, m[curr-1].avg);
-            int r = rand() % 5 + 1;
+            printf("m[%d] = {%lu, %lu, %lu, %f}\n", curr, m[curr-1].ptr, m[curr-1].count, m[curr-1].accumTime, m[curr-1].avg);
 
-            enQueue(&qin, r);
             printf("stop\n");
             countSec = 0;
 
@@ -561,8 +610,11 @@ QState QHsmTst_stop(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+                if (!inQueue(qout,1)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 1);
-                pout++;
                 return Q_HANDLED();
             }
         }
@@ -573,8 +625,11 @@ QState QHsmTst_stop(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+                if (!inQueue(qout,2)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 2);
-                pout++;
                 return Q_HANDLED();
             }
         }
@@ -585,6 +640,10 @@ QState QHsmTst_stop(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+                if (!inQueue(qout,3)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 3);
                 return Q_HANDLED();
             }
@@ -596,8 +655,11 @@ QState QHsmTst_stop(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+                if (!inQueue(qout,4)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 4);
-                pout++;
                 return Q_HANDLED();
             }
         }
@@ -608,8 +670,11 @@ QState QHsmTst_stop(QHsmTst *me) {
                 return Q_HANDLED();
             }
             else{
+                if (!inQueue(qout,4)){
+                    pout++;
+                    psim++;
+                }
                 enQueue(&qout, 5);
-                pout++;
                 return Q_HANDLED();
             }
         }
@@ -635,31 +700,3 @@ QState QHsmTst_stop(QHsmTst *me) {
     return Q_SUPER(&QHsm_top);
 
 }
-
-/*
-QState QHsmTst_s211(QHsmTst *me) {
-    switch (Q_SIG(me)) {
-        case Q_ENTRY_SIG: {
-            BSP_display("s211-ENTRY;");
-            return Q_HANDLED();
-        }
-        case Q_EXIT_SIG: {
-            BSP_display("s211-EXIT;");
-            return Q_HANDLED();
-        }
-        case D_SIG: {
-            BSP_display("s211-D;");
-            return Q_TRAN(&QHsmTst_s21);
-        }
-        case F_SIG: {
-            BSP_display("s211-F;");
-            return Q_TRAN(&QHsmTst_s1);
-        }
-        case G_SIG: {
-            BSP_display("s211-G;");
-            return Q_TRAN(&QHsmTst_s111);
-        }
-    }
-    return Q_SUPER(&QHsmTst_s21);
-}
-*/
